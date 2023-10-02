@@ -14,16 +14,5 @@ Spin up the containers:
 $ docker-compose up -d --build
 ```
 
-Open your browser to [http://localhost:8004](http://localhost:8004) to view the app or to [http://localhost:5556](http://localhost:5556) to view the Flower dashboard.
+Open your browser to [http://localhost:8000/docs](http://localhost:8000/docs) to view the app or to [http://localhost:5555](http://localhost:5556) to view the Flower dashboard.
 
-Trigger a new task:
-
-```sh
-$ curl http://localhost:8004/tasks -H "Content-Type: application/json" --data '{"type": 0}'
-```
-
-Check the status:
-
-```sh
-$ curl http://localhost:8004/tasks/<TASK_ID>
-```
