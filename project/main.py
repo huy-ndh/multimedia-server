@@ -38,22 +38,3 @@ async def read_item(item_id: str):
     if item is None:
         return {"message": "Item not found"}
     return item
-
-
-
-# @app.post("/tasks", status_code=201)
-# def run_task(link="", lyrics=""):
-#     print(link, lyrics)
-#     task = create_task.delay(1)
-#     return JSONResponse({"task_id": task.id})
-
-
-# @app.get("/tasks/{task_id}")
-# def get_status(task_id):
-#     task_result = AsyncResult(task_id)
-#     result = {
-#         "task_id": task_id,
-#         "task_status": task_result.status,
-#         "task_result": task_result.result
-#     }
-#     return JSONResponse(result)
