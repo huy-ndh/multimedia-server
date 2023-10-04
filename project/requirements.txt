@@ -1,5 +1,5 @@
 aiofiles==23.2.1
-celery==5.3.4
+celery==5.0.5
 fastapi==0.103.2
 flower==2.0.1
 Jinja2==3.1.2
@@ -9,5 +9,6 @@ requests==2.31.0
 uvicorn==0.23.2
 yt-dlp==2023.7.6
 ffmpeg-python==0.2.0
-# spleeter==2.1.0
+spleeter==2.4.0
 pymongo==4.5.0
+whisperx @ git+https://github.com/m-bain/whisperx@main

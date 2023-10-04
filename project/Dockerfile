@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.11.2-slim-buster
+FROM python:3.10.13-bookworm
 
 # set work directory
 WORKDIR /usr/src/app
@@ -13,6 +13,7 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get install -y --no-install-r
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
+# RUN pip install spleeter==2.4.0
 
 # copy project
 COPY . .
