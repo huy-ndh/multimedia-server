@@ -1,12 +1,10 @@
 import os
-import time
 import datetime
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from celery import Celery
 import yt_dlp
 import ffmpeg
-
 
 celery = Celery(__name__)
 celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379")
@@ -58,7 +56,7 @@ def create_task(id):
 		log = f"{now}\tStatus: 2\tSplit audio from video and video without audio successfully"
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": 2 } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
-		return True
+
 	else:
 		return False
 
