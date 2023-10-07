@@ -19,7 +19,7 @@ services:
 
   worker:
     build: ./project
-    command: celery -A worker.celery worker --loglevel=info --logfile=logs/celery.log
+    command: celery -A worker.celery worker -P threads --loglevel=info --logfile=logs/celery.log
     volumes:
       - ./project:/usr/src/app
     environment:
@@ -46,18 +46,18 @@ services:
       - mongodb:/data/db
       - mongoconfig:/data/configdb
 
-  dashboard:
-    build: ./project
-    command: celery --broker=redis://redis:6379/0 flower --port=5555
-    ports:
-      - 5555:5555
-    environment:
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    depends_on:
-      - web
-      - redis
-      - worker
+  # dashboard:
+  #   build: ./project
+  #   command: celery --broker=redis://redis:6379/0 flower --port=5555
+  #   ports:
+  #     - 5555:5555
+  #   environment:
+  #     - CELERY_BROKER_URL=redis://redis:6379/0
+  #     - CELERY_RESULT_BACKEND=redis://redis:6379/0
+  #   depends_on:
+  #     - web
+  #     - redis
+  #     - worker
 
 volumes:
   mongodb:

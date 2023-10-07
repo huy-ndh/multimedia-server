@@ -1,14 +1,16 @@
 import os
 import datetime
+import yt_dlp
+import ffmpeg
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from celery import Celery
-import yt_dlp
-import ffmpeg
+from spleeter.separator import Separator
 
 celery = Celery(__name__)
 celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379")
 celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379")
+celery.conf.worker_pool = 'threads'
 
 connection_string = os.environ.get("CONNECTION_STRING_MONGO", "mongodb://root:password@localhost:27017/?authMechanism=DEFAULT")
 client = MongoClient(connection_string)
@@ -23,6 +25,7 @@ def create_task(id):
 
 	if(task["link"]):
 		links = task["link"]
+		task_path = f"data/{id}/"
 		video_path = f"data/{id}/video.mp4"
 		audio_path = f"data/{id}/audio.mp3"
 		video_without_audio_path = f"data/{id}/video_without_audio.mp4"
@@ -38,25 +41,38 @@ def create_task(id):
 
 		with yt_dlp.YoutubeDL(ydl_opts) as ydl:
 			ydl.download([links])
-		
-		now = datetime.datetime.now()
-		log = f"{now}\tStatus: 1\tDownload video successfully"
-		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": 1 } })
-		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
+		update_state(1, id)
 
 		ffmpeg.input(video_path) \
 			.output(audio_path, acodec='libshine') \
 			.run()
-		
 		ffmpeg.input(video_path) \
 			.output(video_without_audio_path, vcodec='copy', an=None) \
 			.run()
-		
-		now = datetime.datetime.now()
-		log = f"{now}\tStatus: 2\tSplit audio from video and video without audio successfully"
-		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": 2 } })
-		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
+		update_state(2, id)
 
+		separator = Separator('spleeter:2stems')
+		separator.separate_to_file(audio_path, task_path)
+		update_state(3, id)
+		
+		return True
 	else:
 		return False
 
+def update_state (status, id):
+	now = datetime.datetime.now()
+	if status == 1:
+		log = f"{now}\tStatus: 1\tDownload video successfully"
+		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
+		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
+	elif status == 2:
+		log = f"{now}\tStatus: 2\tSplit audio from video and video without audio successfully"
+		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
+		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
+	elif status == 3:
+		log = f"{now}\tStatus: 3\tSeparate vocals and music successfully"
+		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
+		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
+	else:
+		return
+	

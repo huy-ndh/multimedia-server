@@ -1,16 +1,14 @@
 from celery.result import AsyncResult
-from fastapi import Body, FastAPI, Form, Request
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
 from pymongo import MongoClient
 from pydantic import BaseModel
 from bson.objectid import ObjectId
 from worker import create_task
 from typing import List, Optional
-from bson.json_util import dumps, loads
+from bson.json_util import dumps
 import datetime
 import json
-import yt_dlp
 import os
 
 app = FastAPI()
@@ -47,9 +45,15 @@ async def create_item(item: Item):
 @app.get("/tasks/{task_id}")
 async def read_item(task_id: str):
     try:
+        task_result = AsyncResult(task_id)
+        result = {
+            "task_id": task_id,
+            "task_status": task_result.status,
+            "task_result": task_result.result
+        }
         item = collection.find_one({"task_id": task_id})
         if item is None:
             return JSONResponse({"success": True, "message": "Item not found"})
-        return JSONResponse({"success": True, "task": json.loads(dumps(item))})
+        return JSONResponse({"success": True, "item": json.loads(dumps(item)), "task": str(result)})
     except Exception as err:
         return JSONResponse({"success": False, "message": err})
