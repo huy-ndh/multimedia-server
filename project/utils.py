@@ -52,42 +52,56 @@ def match_sents(data, t_sents):
     para['clean_wdx'] = []
   return data
 
-def post_processing(raw_lyric, seg_lyric):
-    raw_lines = raw_lyric.splitlines()
-    l_nums = [len([word for word in re.split(r'\W+', line) if word]) for line in raw_lines]
-    print(l_nums)
-    # Fill timestamps
-    for seg_line in seg_lyric["segments"]:
-        for i, word in enumerate(seg_line["words"]):
-            if 'start' not in word:
-                if i ==0:
-                    word['start'] = seg_line["start"]
-                else:
-                    word['start'] = seg_line["words"][i-1]['end']
-            if 'end' not in word:
-                if i==len(seg_line["words"])-1:
-                    word['end'] = seg_line["end"]
-                else:
-                    word['end'] = seg_line["words"][i+1]['start']
-    # Break lines
-    new_seg_lyric = [[]]
-    for seg_line in seg_lyric["segments"]:
-        for word in seg_line["words"]:
-            if l_nums[0] == 0:
-                l_nums.pop(0)
-                new_seg_lyric.append([])
-            l_nums[0] -= 1
-            new_seg_lyric[-1].append(word)
-    return new_seg_lyric
+def post_processing(raw_lines, seg_lyric):
+  l_nums = [len([word for word in re.split(r'\W+', line) if word]) for line in raw_lines]
+  # Fill timestamps
+  for seg_line in seg_lyric["segments"]:
+    start_time = seg_line["start"]
+    end_time = seg_line["end"]
+    for i, word in enumerate(seg_line["words"]):
+      if 'start' not in word:
+        if i ==0:
+          word['start'] = seg_line["start"]
+        else:
+          word['start'] = seg_line["words"][i-1]['end']
+      if 'end' not in word:
+        if i==len(seg_line["words"])-1:
+          word['end'] = seg_line["end"]
+        else:
+          word['end'] = seg_line["words"][i+1]['start']
+  # Break lines
+  new_seg_lyric = [[]]
+  for i_line, seg_line in enumerate(seg_lyric["segments"]):
+    for word in seg_line["words"]:
+      if l_nums[0] == 0:
+        l_nums.pop(0)
+        if not len(l_nums):
+          break
+        new_seg_lyric.append([])
+      l_nums[0] -= 1
+      new_seg_lyric[-1].append(word)
+  return new_seg_lyric
 
 def writeSub(data_segments):
-    ass_script = []
-    for s_line in data_segments:
-        start_time = s_line[0]['start']
-        end_time = s_line[-1]['end']
-        text = ''
-        for word in s_line:
-            dur = int((word['end'] - word['start'])*100)
-            text += f'{{\k{dur}}}{word["word"]} '
-            ass_script.append(f"Dialogue: 0,{start_time},{end_time},Default,,0,0,0,karaoke, {text}\n")
-    return ass_script
+  ass_script = []
+  for s_line in data_segments:
+    start_time = s_line[0]['start']
+    end_time = s_line[-1]['end']
+    text = ''
+    for word in s_line:
+      dur = int((word['end'] - word['start'])*100)
+      text += f'{{\k{dur}}}{word["word"]} '
+      # text = text[:-2]
+    ass_script.append(f"Dialogue: 0,{start_time},{end_time},Default,,0,0,0,karaoke, {text}\n")
+  return ass_script
+
+def WriteAssFile(assTemplateFile, newAssPath, seg_lyric):
+  with open(assTemplateFile, "r", encoding="utf-8") as file:
+    lines = file.readlines()
+  kara_script = writeSub(seg_lyric)
+  lines.pop()
+  lines.pop()
+  lines.extend(kara_script)
+  with open(newAssPath, "w", encoding="utf-8") as file:
+    file.writelines(lines)
+  pass
