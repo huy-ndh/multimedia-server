@@ -1,16 +1,12 @@
-celery==5.0.5
+celery==5.3.4
 fastapi==0.103.2
 flower==2.0.1
 uvicorn==0.23.2
 yt-dlp==2023.7.6
 ffmpeg-python==0.2.0
 # spleeter==2.4.0
-spleeter @ git+https://github.com/hiendang7613/my_spleeter.git
+spleeter @ git+https://github.com/hhuy09/spleeter.git
 pymongo==4.5.0
 redis==5.0.1
-whisperx @ git+https://github.com/m-bain/whisperx@main
+whisperx @ git+https://github.com/m-bain/whisperX.git
 dnspython==2.3.0
-tensorflow==2.12
-
-
-
