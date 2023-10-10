@@ -89,7 +89,7 @@ def format_seconds(seconds):
     milliseconds = (seconds - int(seconds)) * 100
     return f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}.{int(milliseconds):02d}"
 
-def writeSub(data_segments):
+def write_sub(data_segments):
   ass_script = []
   for s_line in data_segments:
     start_time = s_line[0]['start']

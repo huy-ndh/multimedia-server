@@ -1,6 +1,6 @@
 from celery.result import AsyncResult
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pymongo import MongoClient
 from pydantic import BaseModel
@@ -14,22 +14,23 @@ import os
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:3000",
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=['*'],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=['*'],
+    allow_headers=['*'],
 )
 
 connection_string = os.environ.get("CONNECTION_STRING_MONGO", "mongodb://root:password@localhost:27017/?authMechanism=DEFAULT")
 client = MongoClient(connection_string)
 db = client["mydatabase"]
 collection = db["mycollection"]
+
+
+class FileResult(BaseModel):
+    karaoke_video: Optional[str] = ""
+    lyrics_video: Optional[str] = ""
 
 class Item(BaseModel):
     name: str
@@ -38,6 +39,7 @@ class Item(BaseModel):
     status: int = 0
     task_id: Optional[str] = ""
     logs: List[str] = []
+    files: Optional[FileResult]
 
 @app.post("/tasks/")
 async def create_item(item: Item):
@@ -69,3 +71,8 @@ async def read_item(task_id: str):
         return JSONResponse({"success": True, "item": json.loads(dumps(item)), "task": str(result)})
     except Exception as err:
         return JSONResponse({"success": False, "message": err})
+    
+
+@app.get("/video/")
+async def spleeter(path: str):
+    return FileResponse(path, headers={"Content-Type": "video/mp4"})
