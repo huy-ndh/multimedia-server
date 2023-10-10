@@ -4,66 +4,54 @@
 Title: Default Aegisub file
 ScriptType: v4.00+
 WrapStyle: 0
-PlayResX: 3840
-PlayResY: 2026
 ScaledBorderAndShadow: yes
-Video Aspect Ratio: 0
-Video Zoom: 4
-YCbCr Matrix: TV.601
+PlayResX: 1280
+PlayResY: 720
+YCbCr Matrix: None
 
 [Aegisub Project Garbage]
 Last Style Storage: Default
-Audio File: abc.mp4
-Video File: abc.mp4
-Video AR Mode: 4
-Video AR Value: 1.895360
-Video Zoom Percent: 0.250000
-Active Line: 1
+Video Zoom Percent: 1.000000
+Scroll Position: 3446
+Active Line: 3460
+Video Position: 2072
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Default,UVN Hai Long,141,&H00000000,&H000000FF,&H00FFFFFF,&H00000000,0,0,0,0,100,100,0,0,1,5.62778,0,9,39,39,59,1
+Style: Default - Copier-furigana,LibbyScript,17.5,&H00FFFFFF,&H0000DEFF,&H000096FF,&H00000000,-1,0,0,0,100,100,0,0,1,1,0,9,10,10,10,1
+Style: Default-furigana,LibbyScript,25,&H00FFFFFF,&H0000DEFF,&H000096FF,&H00000000,-1,0,0,0,100,100,0,0,1,1,0,5,10,10,10,1
+Style: Default,LibbyScript,50,&H00FFFFFF,&H0000DEFF,&H000096FF,&H00000000,-1,0,0,0,100,100,0,0,1,2,0,2,10,10,10,1
+Style: Default - Copier,LibbyScript,35,&H00FFFFFF,&H0000DEFF,&H000096FF,&H00000000,-1,0,0,0,100,100,0,0,1,2,0,9,10,10,10,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
-Comment: 0,0:00:00.00,0:00:00.00,Default,,0000,0000,0000,,Written and shared by Địa Ngục Máu @AFS - Vui lòng ghi rõ nguồn Karaoke Effect Địa Ngục Máu @AFS khi sử dụng ^^ _____ Click vào nút Resample Resolution và nháy nút From video để chỉnh độ phân giải của Sub và Video khớp với nhau để tránh tình trạng tách chữ và méo shape.
-Comment: 0,0:00:00.00,0:00:00.00,Default,,0000,0000,0000,code syl all,function char_counter(ref) ci[ref] = ci[ref] + 1; return "" end
-Comment: 0,0:00:00.00,0:00:00.00,Default,,0000,0000,0000,code line all,ci = { 0 }; cn = _G.unicode.len(orgline.text_stripped:gsub(" ",""))
-Comment: 0,0:00:00.00,0:00:00.00,Default,,0000,0000,0000,code syl all,function char_counter2(ref) ci2[ref] = ci2[ref] + 1; return "" end
-Comment: 0,0:00:00.00,0:00:00.00,Default,,0000,0000,0000,code line all,ci2 = { 0 }; cn = _G.unicode.len(orgline.text_stripped:gsub(" ",""))
-Comment: 0,0:00:00.00,0:00:00.00,Default,,0000,0000,0000,code once,temp = {}
-Comment: 1,0:00:00.00,0:00:00.00,Default,cánh phải,0000,0000,0000,template noblank notext,!retime("syl",-25,500)!{\an1\frz10\fad(0,200)\move($sright,$smiddle,!$sright-50!,!$smiddle-50!)\shad1\bord0\blur1\3c&H000000&\4c&H000000&\c&HFFFFFF&\fscx70\fscy70)\t(0,200,\fry-80)\t(200,300,\fry0)\t(300,400,\fry-80)\t(400,500,\fry0)\t(500,600,\fry-80)\t(600,700,\fry0)\t(700,800,\fry-80)\t(800,900,\fry0)\t(900,1000,\fry-80)\t(1000,1100,\fry0)\t(1100,1300,\fry-80)\t(1300,1450,\fry0)\t(1450,1600,\fry-80)\t(1600,1700,\fry0)\t(1700,1850,\fry-80)\t(1850,2000,\fry0)\t(2000,2200,\fry-80)\t(2200,2300,\fry0)\t(2300,2400,\fry-80)\t(2400,2700,\fry0)\p1}m 17 33 b 12 41 6 26 15 24 b 29 25 26 50 15 49 b 9 51 -4 41 2 22 b 11 3 28 -2 45 0 b 58 3 40 24 31 25 b 52 32 39 42 30 36 b 36 47 31 47 25 40 l 25 40 b 26 32 24 22 14 23 b 3 26 11 43 18 35 b 18 33 17 33 17 33 "
-Comment: 1,0:00:00.00,0:00:00.00,Default,cánh trái,0000,0000,0000,template noblank notext,!retime("syl",-25,500)!{\an1\frz-10\fry180\fad(0,200)\move($sleft,$smiddle,!$sleft-50!,!$smiddle-50!)\shad1\bord0\blur1\3c&H000000&\4c&H000000&\c&HFFFFFF&\fscx70\fscy70)\t(0,200,\fry250)\t(200,300,\fry180)\t(300,400,\fry250)\t(400,500,\fry180)\t(500,600,\fry250)\t(600,700,\fry180)\t(700,800,\fry250)\t(800,900,\fry180)\t(900,1000,\fry250)\t(1000,1100,\fry180)\t(1100,1300,\fry250)\t(1300,1450,\fry180)\t(1450,1600,\fry250)\t(1600,1700,\fry180)\t(1700,1850,\fry250)\t(1850,2000,\fry180)\t(2000,2200,\fry250)\t(2200,2300,\fry180)\t(2300,2400,\fry250)\t(2400,2700,\fry180)\p1}m 17 33 b 12 41 6 26 15 24 b 29 25 26 50 15 49 b 9 51 -4 41 2 22 b 11 3 28 -2 45 0 b 58 3 40 24 31 25 b 52 32 39 42 30 36 b 36 47 31 47 25 40 l 25 40 b 26 32 24 22 14 23 b 3 26 11 43 18 35 b 18 33 17 33 17 33 "
-Comment: 1,0:00:00.00,0:00:00.00,Default,vòng thiên sứ,0000,0000,0000,template noblank,!retime("syl",-25,500)!{\frz5\fscx100\fscy50\an5\blur2\fad(0,300)\move($scenter,!$smiddle-40!,!$scenter-50!,!$smiddle-90!)\bord1\3c&H00FCFF&\c&HC7FEFF&\p1}m 0 25 b 1 10 50 11 50 25 b 51 40 -1 40 0 25 m 2 23 b -5 38 49 39 49 25 b 50 14 6 11 2 23 "
-Comment: 1,0:00:00.00,0:00:00.00,Default,,0000,0000,0000,template noblank,!retime("syl",-25,500)!{\an5\blur2\fad(0,300)\move($scenter,$smiddle,!$scenter-50!,!$smiddle-50!)\t(0,25,\bord10\blur3)\t(25,$dur,\frz5\3c&HFFFFFF&\fscx100\fscy100\bord10\blur5)}
-Comment: 1,0:00:00.00,0:00:00.00,Default,lead-in(feather),0000,0000,0000,template char notext,!char_counter(1)!!retime("start2syl",-900+(ci[1]-1)*20,500+(ci[1]-1)*25)!{\fad(0,100)\c&HFFFFFF&\bord1\3c&HFFFFFF&\blur2\fscx50\fscy50\an5\frz!math.random(-100,0)!\move($scenter,$smiddle,!$scenter+math.random(-50,50)!,!$smiddle+math.random(-50,50)!)\fad(230,0)\t(0,!line.duration!,\fscy90,fscx90\frz!math.random(-700,700)!\fry!math.random(-700,700)!\frx!math.random(-700,700)!\fad(0,500)\p1}m 0 0 l 2 -3 l 9 -7 l 10 -8 l 17 -9 b 18 -9 20 -9 20 -6 b 20 -5 19 -5 19 -4 b 15 -3 10 -1 6 0 l 0 1 l -3 3 "
-Comment: 1,0:00:00.00,0:00:00.00,Default,lead-in(text),0000,0000,0000,template char,!char_counter2(1)!!retime("start2syl",-400+(ci2[1]-1)*35,0)!{\an5\c&HFFFFFF&\3c&HFFFFFF&\blur1\move(!$scenter+10!,!$smiddle+10!,$scenter,$smiddle,100,400)\fad(230,0)\t(0,400,\fscx100\fscy100\blur0\c&H000000&)}
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code once all,high=300
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code once all,perc={1;0.9;0.8;0.7;0.6;0.5;0.4}
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code syl all,function char_counter(ref) ci[ref] = ci[ref] + 1; return "" end
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code line all,ci = {0,0}; cn = _G.unicode.len(orgline.text_stripped:gsub(" ",""))
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code once all,color={"&H0000FF&","&H007FFF&","&H00FFFF&","&H00FF64&","&HFFFF00&","&HFF6400&","&HFF008C&"}
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code line all,stt=0; stc=0; dau=1; pri=0;
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code line all,function dem2(a) stt=stt+1; return ""; end
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code line all,function colorval(a) a=a+dau; if a==8 then dau=dau*(-1); a=6; end; if a==0 then dau=dau*(-1); a=2; end; pri=a; stc=a; return a; end
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code once all,high=300
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code once all,perc={1;0.9;0.8;0.7;0.6;0.5;0.4}
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code once all,color0={"&HE2E2E2&","&HE2E2E2&","&HE2E2E2&","&HE2E2E2&","&HE2E2E2&","&HE2E2E2&","&HE2E2E2&"}
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code line all,stt=0
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code once all,function dem4(a) stt=stt+1; return stt; end
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code once,la_vang = { "m 0 0 l -1 1 l -2 -1 l -1 -2 l -1 -2 b -25 -7 -12 -28 -15 -39 b -15 -39 -15 -39 -15 -39 b -15 -39 -15 -39 -15 -39 l 1 -3 l 1 0 l 1 -3 b 1 -3 1 -3 1 -3 b 1 -2 2 -2 2 -1 b 2 -1 2 -1 2 -1 b 14 -31 -11 -29 -15 -39 b 1 -2 1 -2 1 -1 b 2 -2 2 -3 3 -4 b 7 -14 17 -9 24 -12 b 17 -9 13 6 3 -2 "}
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code syl all,function char_counter(ref) ci[ref] = ci[ref] + 1; return "" end
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code line all,ci = { 0}; cn = _G.unicode.len(orgline.text_stripped:gsub(" ",""))
+Comment: 1,0:00:00.00,0:00:00.00,Default,,0,0,0,template char notext,!char_counter(1)!!retime("start2syl",-900+(ci[1]-1)*20,500+(ci[1]-1)*25)!{\fad(0,100)\c&HFFFFFF&\bord2\3c&HFFFFFF&\blur4\fscx2\fscy2\an5\move($scenter,!$smiddle-25!,!$scenter+math.random(-50,50)!,!$smiddle+math.random(-25,70)!)\fad(230,0)\t(0,!line.duration!,\fscy3\fscx3\fad(0,500)\p1)}!la_vang[math.random(2)]!
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code syl all,function char_counter2(ref) ci2[ref] = ci2[ref] + 1; return "" end
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code line all,ci2 = { 0 }; cn = _G.unicode.len(orgline.text_stripped:gsub(" ",""))
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,code once,la = {"m 0 0 l -1 1 l -2 -1 l -1 -2 l -1 -2 b -25 -7 -12 -28 -15 -39 b -15 -39 -15 -39 -15 -39 b -15 -39 -15 -39 -15 -39 l 1 -3 l 1 0 l 1 -3 b 1 -3 1 -3 1 -3 b 1 -2 2 -2 2 -1 b 2 -1 2 -1 2 -1 b 14 -31 -11 -29 -15 -39 b 1 -2 1 -2 1 -1 b 2 -2 2 -3 3 -4 b 7 -14 17 -9 24 -12 b 17 -9 13 6 3 -2 "}
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,template char loop 2,!dem2(1)!!retime("start2syl",-1200+stt*5+j*10,0)!{\move(!$scenter-30!,!$smiddle-30!,!$scenter+10!,!$smiddle+10!,0,!300+j*25!)\an5\bord0\fsc120\alpha&ff&\t(0,!200+j*25!,\alpha&HAF\fsc100)\t(!200+j*25!,!300+j*25!,\alpha&ff&)}
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,template noblank char,!dem2(1)!!retime("start2syl",-1200+stt*5+120,0)!{\pos($scenter,$smiddle)\an5\1c&ffffff&\bord0\blur8\t(0,60,\alpha&HAF\blur0)}
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,template char loop 2,!dem2(1)!!retime("start2syl",-1200+stt*5+j*10,0)!{\move(!$scenter+30!,!$smiddle+30!,!$scenter-10!,!$smiddle-10!,0,!300+j*25!)\an5\bord0\fsc120\alpha&ff&\t(0,!200+j*25!,\alpha&HAF\fsc100)\t(!200+j*25!,!300+j*25!,\alpha&ff&)}
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,template syl noblank,!retime("syl",0,0)!{\pos($scenter,$sbottom)\an2\3c&HFFFFFF&\t(0,!line.duration/4.5!,0.65,\bord2\blur7\fscy120)\t(!line.duration/2.5!,!line.duration!,1.35,\3c&H0096FF&\fscy100\bord1\blur2)}
+Comment: 0,0:00:00.00,0:00:00.00,Default,,0,0,0,template noblank char,!retime("syl2end",0,$lright)!{\pos($scenter,$smiddle)\\bord1\blur2\an5\t(!line.duration-$lright-1000+$scenter+(j-1)*8!,!line.duration-$lright-950+$scenter+(j-1)*8!,0.5,\fsc80\bord1.3\blur2\3c&ffffff&)\t(!line.duration-$lright-950+$scenter+(j-1)*8!,!line.duration-$lright-600+$scenter+(j-1)*8!,0.5,\fsc120\alpha&ff&\bord1\blur0)}
+Comment: 0,0:00:16.98,0:00:16.98,Default,,0,0,0,template noblank char,!retime("start2syl",-1200,0)!{\pos($scenter,$smiddle)\an5\1c&ffffff&\alpha&ff&\fsc120\bord0\blur8\be8\frs2\t(!(dem4(1)-1)*50!,!(dem4(1)+7)*50!,0.75,\alpha&HAF\blur0\be0\frs0\fsc100)}
+Comment: 1,0:00:00.00,0:00:00.00,Default,,0,0,0,template noblank notext,!retime("syl",-200,500)!{\fscx20\fscy30\c&HFFFFFF&\3c&HFFFFFF&\fad(0,200)\bord2\blur3\an5\frz!math.random(-40,45)!\move(!$scenter+math.random(-20,20)!,!$smiddle+math.random(-50,-30)!,!$scenter+math.random(-70,70)!,!$smiddle+math.random(30,50)!)\t(0,3000,\frz!math.random(-200,200)!)\t(0,100,\bord0.5\blur4\3c&HFFFFFF&)\p1}m 0 0 l -1 1 l -2 -1 l -1 -2 l -1 -2 b -25 -7 -12 -28 -15 -39 b -15 -39 -15 -39 -15 -39 b -15 -39 -15 -39 -15 -39 l 1 -3 l 1 0 l 1 -3 b 1 -3 1 -3 1 -3 b 1 -2 2 -2 2 -1 b 2 -1 2 -1 2 -1 b 14 -31 -11 -29 -15 -39 b 1 -2 1 -2 1 -1 b 2 -2 2 -3 3 -4 b 7 -14 17 -9 24 -12 b 17 -9 13 6 3 -2
 
 Dialogue: 0,0:00:00.00,0:03:08.24,Default,,0000,0000,0000,,
-Dialogue: 0,29.907,34.41,Default,,0,0,0,karaoke, {\k37}Em {\k9}là {\k32}ai {\k32}từ {\k19}đâu {\k26}bước {\k12}đến {\k30}nơi {\k24}đây {\k28}dịu {\k25}dàng {\k27}chân {\k70}phương 
-Dialogue: 0,43.606,54.615,Default,,0,0,0,karaoke, {\k52}Em {\k90}là {\k57}ai {\k28}tựa {\k85}như {\k30}ánh {\k96}nắng {\k238}ban {\k114}mai {\k14}ngọt {\k50}ngào {\k62}trong {\k64}sương 
-Dialogue: 0,54.936,58.459,Default,,0,0,0,karaoke, {\k162}Ngắm {\k50}em {\k98}thật {\k24}lâu 
-Dialogue: 0,58.539,60.18,Default,,0,0,0,karaoke, {\k29}Con {\k28}tim {\k23}anh {\k26}yếu {\k35}mềm 
-Dialogue: 0,60.32,62.702,Default,,0,0,0,karaoke, {\k14}Đắm {\k56}say {\k12}từ {\k120}phút {\k1}đó 
-Dialogue: 0,64.184,68.648,Default,,0,0,0,karaoke, {\k214}Từng {\k14}giây {\k66}trôi {\k90}yêu {\k31}thêm 
-Dialogue: 0,147.225,155.37,Default,,0,0,0,karaoke, {\k48}Bao {\k94}ngày {\k126}qua {\k17}bình {\k61}minh {\k3}đánh {\k24}thức {\k43}xua {\k35}tan {\k37}bộn {\k230}bề {\k14}nơi {\k25}anh 
-Dialogue: 0,155.39,162.214,Default,,0,0,0,karaoke, {\k110}Bao {\k100}ngày {\k32}qua {\k58}niềm {\k21}thương {\k21}nỗi {\k12}nhớ {\k34}bay {\k76}theo {\k14}bầu {\k12}trời {\k14}trong {\k30}xanh 
-Dialogue: 0,162.254,163.195,Default,,0,0,0,karaoke, {\k28}Liếc {\k7}đôi {\k25}hàng {\k13}mi 
-Dialogue: 0,163.215,167.357,Default,,0,0,0,karaoke, {\k256}Mong {\k18}manh {\k10}anh {\k20}thẫn {\k96}thờ 
-Dialogue: 0,167.397,169.659,Default,,0,0,0,karaoke, {\k100}Muốn {\k31}hôn {\k21}nhẹ {\k19}mái {\k40}tóc 
-Dialogue: 0,170.679,173.88,Default,,0,0,0,karaoke, {\k3}Bờ {\k28}môi {\k21}em {\k210}anh {\k25}mơ 
-Dialogue: 0,173.96,178.461,Default,,0,0,0,karaoke, {\k29}Cầm {\k29}tay {\k152}anh {\k31}dựa {\k141}vai {\k32}anh 
-Dialogue: 0,178.481,180.962,Default,,0,0,0,karaoke, {\k34}Kề {\k28}bên {\k24}anh {\k14}nơi {\k16}này {\k2}có {\k100}anh 
-Dialogue: 0,181.102,183.603,Default,,0,0,0,karaoke, {\k35}Gió {\k31}mang {\k80}câu {\k24}tình {\k52}ca 
-Dialogue: 0,183.723,197.687,Default,,0,0,0,karaoke, {\k11}Ngàn {\k18}ánh {\k30}sao {\k29}vụt {\k654}qua {\k32}nhẹ {\k504}ôm {\k14}lấy {\k14}em 
-Dialogue: 0,200.046,204.428,Default,,0,0,0,karaoke, {\k48}(Yêu {\k95}em {\k63}thương {\k21}em {\k32}con {\k14}tim {\k69}anh {\k30}chân {\k12}thành) 
-Dialogue: 0,204.468,208.65,Default,,0,0,0,karaoke, {\k20}Cầm {\k10}tay {\k9}anh {\k10}dựa {\k332}vai {\k9}anh 
-Dialogue: 0,208.67,212.431,Default,,0,0,0,karaoke, {\k20}Kề {\k90}bên {\k20}anh {\k14}nơi {\k96}này {\k75}có {\k24}anh 
-Dialogue: 0,212.451,214.372,Default,,0,0,0,karaoke, {\k12}Khép {\k9}đôi {\k26}mi {\k79}thật {\k44}lâu 
-Dialogue: 0,214.392,219.314,Default,,0,0,0,karaoke, {\k75}Nguyện {\k166}mãi {\k198}bên {\k18}cạnh {\k19}nhau 
-Dialogue: 0,219.454,222.495,Default,,0,0,0,karaoke, {\k78}Yêu {\k32}say {\k13}đắm {\k43}như {\k31}ngày {\k65}đầu 
-Dialogue: 0,222.555,223.476,Default,,0,0,0,karaoke, {\k28}Mùa {\k12}xuân {\k1}đến {\k18}bình {\k19}yên 
-Dialogue: 0,223.496,225.497,Default,,0,0,0,karaoke, {\k34}Cho {\k28}anh {\k20}những {\k80}giấc {\k2}mơ 
-Dialogue: 0,225.537,227.978,Default,,0,0,0,karaoke, {\k9}Hạ {\k15}lưu {\k16}giữ {\k12}ngày {\k86}mưa 
-Dialogue: 0,230.912,234.034,Default,,0,0,0,karaoke, {\k208}Ngọt {\k40}ngào {\k12}nên {\k6}thơ 
-Dialogue: 0,273.387,273.558,Default,,0,0,0,karaoke, {\k17}you 
+
