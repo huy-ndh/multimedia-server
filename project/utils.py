@@ -81,8 +81,15 @@ def post_processing(raw_lines, seg_lyric):
       l_nums[0] -= 1
       new_seg_lyric[-1].append(word)
   return new_seg_lyric
+    
+def format_seconds(seconds):
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    milliseconds = (seconds - int(seconds)) * 100
+    return f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}.{int(milliseconds):02d}"
 
-def write_sub(data_segments):
+def writeSub(data_segments):
   ass_script = []
   for s_line in data_segments:
     start_time = s_line[0]['start']
