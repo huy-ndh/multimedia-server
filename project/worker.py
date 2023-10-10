@@ -10,7 +10,7 @@ import subprocess
 from utils import match_sents, post_processing, write_ass_file
 from request import spleeter, whisper
 import whisperx
-import requests
+import time
 
 
 
@@ -31,7 +31,7 @@ batch_size = 1
 compute_type = "float32"
 align_model = "facebook/wav2vec2-large-960h-lv60-self"
 whisper_model = "large-v2"
-mode = True
+mode = False
 
 @celery.task(name="create_task")
 def create_task(id):
@@ -46,8 +46,9 @@ def create_task(id):
 		video_path = f"data/{id}/video.mp4"
 		audio_path = f"data/{id}/audio.mp3"
 		video_without_audio_path = f"data/{id}/video_without_audio.mp4"
-		beat_path = task_path + 'audio/accompaniment.wav'
-		voice_path = task_path + 'audio/vocals.wav'
+		beat_path = task_path + 'accompaniment.wav'
+		vocals_path = f'/content/{id}/audio/vocals.wav'
+		voice_path = task_path + 'vocals.wav'
 		subtitle_path = f"data/{id}/subtile.ass"
 		ydl_opts = {
 			"writesubtitles": True,
@@ -83,7 +84,8 @@ def create_task(id):
 			]
 			subprocess.run(spleeter_command)
 		else:
-			spleeter(id, audio_path, task_path)
+			# spleeter(id, audio_path, task_path)
+			print(spleeter(id, audio_path, task_path))
 		update_state(3, id)
 
 		if mode:
@@ -103,8 +105,15 @@ def create_task(id):
 			new_seg_lyric = post_processing(t_sents, data)
 			write_ass_file(ass_template, subtitle_path, new_seg_lyric)
 		else:
-			whisper(id, voice_path, task['lyrics'], task_path)
+			# whisper(id, voice_path, task['lyrics'], task_path)
+			print(whisper(id, vocals_path, task['lyrics'], task_path))
 		update_state(4, id)
+
+		check = os.path.isfile(beat_path) and os.path.isfile(subtitle_path)
+
+		while (not check):
+			print(check)
+			time.sleep(3)
 
 		render_command = [
 			'ffmpeg',
@@ -140,7 +149,7 @@ def update_state (status, id):
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	elif status == 5:
-		log = f"{now}\tStatus: 4\tCreate video successfully"
+		log = f"{now}\tStatus: 5\tCreate video successfully"
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	else:
