@@ -7,9 +7,9 @@ from bson.objectid import ObjectId
 from celery import Celery
 # from spleeter.separator import Separator
 import subprocess
-from utils import match_sents, post_processing, WriteAssFile
+from utils import match_sents, post_processing, write_ass_file
 import whisperx
-import re
+import requests
 
 
 
@@ -23,14 +23,14 @@ client = MongoClient(connection_string)
 db = client["mydatabase"]
 collection = db["mycollection"]
 
-
-assTemplateFile = '/Users/apple/Desktop/multimedia/project/resources/abc.ass'
+ass_template = 'resources/ass_template.ass'
 language = 'vi'
-device = "cpu"
-batch_size = 1 
+device = "cuda"
+batch_size = 1
 compute_type = "float32"
 align_model = "facebook/wav2vec2-large-960h-lv60-self"
 whisper_model = "large-v2"
+
 @celery.task(name="create_task")
 def create_task(id):
 	task = collection.find_one(
@@ -44,16 +44,16 @@ def create_task(id):
 		video_path = f"data/{id}/video.mp4"
 		audio_path = f"data/{id}/audio.mp3"
 		video_without_audio_path = f"data/{id}/video_without_audio.mp4"
-		beat_path = task_path + 'accompaniment.wav'
-		voice_path = task_path + 'vocals.wav'
-		subtile_path = f"data/{id}/subtile.ass"
+		beat_path = task_path + 'audio/accompaniment.wav'
+		voice_path = task_path + 'audio/vocals.wav'
+		subtitle_path = f"data/{id}/subtile.ass"
 		ydl_opts = {
 			"writesubtitles": True,
 			"skip-download": True,
 			"format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
 			"outtmpl": video_path,
-			"force-generic-extractor": True, 
-			"force-generic-downloader": True, 
+			"force-generic-extractor": True,
+			"force-generic-downloader": True,
 		}
 
 
@@ -75,58 +75,41 @@ def create_task(id):
 		# spleeter separate -p spleeter:2stems -o output audio_example.mp3
 		spleeter_command = [
 			'spleeter',
-			'separate', 
-			'-p', 'spleeter:2stems',      
-			'-o', task_path,      
-			audio_path, 
+			'separate',
+			'-p', 'spleeter:2stems',
+			'-o', task_path,
+			audio_path,
 		]
 		subprocess.run(spleeter_command)
-
 		update_state(3, id)
 
-		# Speech to text 
-		print('whisperx.load_model')
-		model = whisperx.load_model(whisper_model, device, compute_type=compute_type) #medium
-		print('whisperx.load_audio')
+		model = whisperx.load_model(whisper_model, device, compute_type=compute_type, language=language)
 		audio = whisperx.load_audio(voice_path)
-		print('model.transcribe')
 		data = model.transcribe(audio, batch_size=batch_size, language=language)
-		# print(data["segments"]) 
-		update_state(4, id)
 
 		if task['lyrics']!='':
 			t_sents = task['lyrics'].splitlines()
-			data2 = match_sents(data, t_sents)
+			data = match_sents(data, t_sents)
 		else:
 			t_sents = [seg['text'] for seg in data["segments"]]
-			data2 = data
 
-		# Align whisper output
-		print('whisperx.load_align_model')
-		model_a, metadata = whisperx.load_align_model(language_code=language, model_name=align_model, device=device)
-		print('whisperx.align')
-		data3 = whisperx.align(data2["segments"], model_a, metadata, audio, device, return_char_alignments=False)
-		print('whisperx.align oke')
-		# print(data2["segments"]) 
-		update_state(5, id)
-		
+		align_model, metadata = whisperx.load_align_model(language_code=language, model_name=align_model, device=device)
+		data = whisperx.align(data["segments"], align_model, metadata, audio, device, return_char_alignments=False)
 
-		# Write Ass file
-		new_seg_lyric = post_processing(t_sents, data3)
-		WriteAssFile(assTemplateFile, subtile_path, new_seg_lyric)
-		update_state(6, id)
+		new_seg_lyric = post_processing(t_sents, data)
+		write_ass_file(ass_template, subtitle_path, new_seg_lyric)
+		update_state(4, id)
 
-		# render kara video
 		render_command = [
 			'ffmpeg',
-			'-i', video_without_audio_path, 
-			'-i', beat_path, 
-			'-vf', 'ass='+subtile_path,      
-			video_kara_path,      
+			'-i', video_without_audio_path,
+			'-i', beat_path,
+			'-vf', f'ass={subtitle_path}',
+			video_kara_path,
 			'-map', '0'
 		]
 		subprocess.run(render_command)
-		update_state(7, id)
+		update_state(5, id)
 
 		return True
 	else:
@@ -139,29 +122,20 @@ def update_state (status, id):
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	elif status == 2:
-		log = f"{now}\tStatus: 2\tSplit audio from video and video without audio successfully"
+		log = f"{now}\tStatus: 2\Create beat audio successfully"
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	elif status == 3:
-		log = f"{now}\tStatus: 3\tSpeech to text "
+		log = f"{now}\tStatus: 3\tSeparate vocal and accompaniment from audio successfully"
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	elif status == 4:
-		log = f"{now}\tStatus: 4\tAligning lyrics"
+		log = f"{now}\tStatus: 4\tCreate lyric music successfully"
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	elif status == 5:
-		log = f"{now}\tStatus: 5\tWriting Ass file"
-		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
-		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
-	elif status == 6:
-		log = f"{now}\tStatus: 6\tRendering kara video"
-		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
-		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
-	elif status == 7:
-		log = f"{now}\tStatus: 7\tRendering kara video successfully"
+		log = f"{now}\tStatus: 4\tCreate video successfully"
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	else:
 		return
-	

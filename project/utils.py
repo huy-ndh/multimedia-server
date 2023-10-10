@@ -82,7 +82,7 @@ def post_processing(raw_lines, seg_lyric):
       new_seg_lyric[-1].append(word)
   return new_seg_lyric
 
-def writeSub(data_segments):
+def write_sub(data_segments):
   ass_script = []
   for s_line in data_segments:
     start_time = s_line[0]['start']
@@ -95,10 +95,10 @@ def writeSub(data_segments):
     ass_script.append(f"Dialogue: 0,{start_time},{end_time},Default,,0,0,0,karaoke, {text}\n")
   return ass_script
 
-def WriteAssFile(assTemplateFile, newAssPath, seg_lyric):
+def write_ass_file(assTemplateFile, newAssPath, seg_lyric):
   with open(assTemplateFile, "r", encoding="utf-8") as file:
     lines = file.readlines()
-  kara_script = writeSub(seg_lyric)
+  kara_script = write_sub(seg_lyric)
   lines.pop()
   lines.pop()
   lines.extend(kara_script)
