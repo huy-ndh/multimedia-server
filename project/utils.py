@@ -1,25 +1,27 @@
 import difflib
 import numpy as np
-import re
+import reimport numpy as np
+from difflib import SequenceMatcher  
+
 def split_on_uppercase(input_string):
-    split_strings = []
-    current_word = ""
-    for char in input_string:
-        if char.isupper() or char==',' or char=='.':
-            if current_word.strip()!='':
-                split_strings.append(current_word.replace(',','').replace('.',''))
-            current_word = char
-        else:
-            current_word += char
-    if current_word:
-        split_strings.append(current_word)
-    return split_strings
+  split_strings = []
+  current_word = ""
+  for char in input_string:
+      if char.isupper() or char==',' or char=='.':
+          if current_word.strip()!='':
+              split_strings.append(current_word.replace(',','').replace('.',''))
+          current_word = char
+      else:
+          current_word += char
+  if current_word:
+      split_strings.append(current_word)
+  return split_strings
 
 def get_sim_score(f_sent, t_sent):
-  frag_f_sents = split_on_uppercase(f_sent['text'])
-  list_sim_score = [difflib.SequenceMatcher(None, t_sent, frag_f).ratio() for frag_f in frag_f_sents]
-  sim_score = max(list_sim_score) if len(list_sim_score) > 0 else 0.
-  return sim_score
+  # frag_f_sents = split_on_uppercase(f_sent['text'])
+  # list_sim_score = [difflib.SequenceMatcher(None, t_sent, frag_f).ratio() for frag_f in frag_f_sents]
+  # sim_score = max(list_sim_score) if len(list_sim_score) > 0 else 0.
+  return SequenceMatcher(None, t_sent, f_sent).ratio()
 
 def get_sim_matrix(f_sents, t_sents):
   sim_matrix = np.zeros((len(f_sents), len(t_sents)))
@@ -57,11 +59,22 @@ def OptimizeSimilarity(f_sents, t_sents):
   return path
 
 def match_sents(data, t_sents):
-  matching_index = OptimizeSimilarity(data['segments'], t_sents)
+  f_sent_arr = []
+  mapping = []
+  for i, seg in enumerate(data['segments']):
+    sents = split_on_uppercase(seg['text'])
+    for sent in sents:
+      mapping.append(i)
+      f_sent_arr.append(sent)
+  matching_index = OptimizeSimilarity(f_sent_arr, t_sents)
+  print(matching_index)
+  print(mapping)
+  # return
   for i, sent in zip(matching_index, t_sents):
-    if 't_text' not in data['segments'][i]:
-      data['segments'][i]['t_text'] = ''
-    data['segments'][i]['t_text'] += ' ' +  sent
+    i_seg=mapping[i]
+    if 't_text' not in data['segments'][i_seg]:
+      data['segments'][i_seg]['t_text'] = ''
+    data['segments'][i_seg]['t_text'] += ' ' +  sent
   for k, para in enumerate(data['segments']):
     if 't_text' not in para:
       para['t_text'] = ''
