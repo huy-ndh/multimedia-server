@@ -1,14 +1,13 @@
 import difflib
 import numpy as np
 import re
-
 def split_on_uppercase(input_string):
     split_strings = []
     current_word = ""
     for char in input_string:
-        if char.isupper():
+        if char.isupper() or char==',' or char=='.':
             if current_word.strip()!='':
-                split_strings.append(current_word)
+                split_strings.append(current_word.replace(',','').replace('.',''))
             current_word = char
         else:
             current_word += char
@@ -16,42 +15,62 @@ def split_on_uppercase(input_string):
         split_strings.append(current_word)
     return split_strings
 
-def match_sents(data, t_sents):
-  i_t_sents = 0
-  for k, para in enumerate(data['segments']):
-    para['t_text'] = ''
-    w_sents = split_on_uppercase(para['text'])
-    if k < len(data['segments']) -1:
-      w_sents2 = split_on_uppercase(data['segments'][k+1]['text'])
-    else:
-      para['t_text'] += ' '.join(t_sents[i_t_sents:])
-      break
-    have_first = False
-    while i_t_sents < len(t_sents):
-      t_sent = t_sents[i_t_sents]
-      sim_arr = [difflib.SequenceMatcher(None, t_sent, w_sent).ratio() for w_sent in w_sents]
-      i_max = np.argmax(sim_arr)
-      if i_max==0:
-        if not have_first:
-          have_first = True
-        else:
-          break
-      sim = sim_arr[i_max]
-      sim2 = difflib.SequenceMatcher(None, t_sent, w_sents2[0]).ratio()
-      if sim >= sim2-0.1:
-        para['t_text'] += ' ' + t_sent
+def get_sim_score(f_sent, t_sent):
+  frag_f_sents = split_on_uppercase(f_sent['text'])
+  list_sim_score = [difflib.SequenceMatcher(None, t_sent, frag_f).ratio() for frag_f in frag_f_sents]
+  sim_score = max(list_sim_score) if len(list_sim_score) > 0 else 0.
+  return sim_score
+
+def get_sim_matrix(f_sents, t_sents):
+  sim_matrix = np.zeros((len(f_sents), len(t_sents)))
+  for j, f_sent in enumerate(f_sents):
+    for i, t_sent in enumerate(t_sents):
+      sim_matrix[j][i] = get_sim_score(f_sent, t_sent)
+  return sim_matrix
+
+def OptimizeSimilarity(f_sents, t_sents):
+  columns = len(t_sents)
+  rows = len(f_sents)
+  sim_matrix = get_sim_matrix(f_sents, t_sents)
+  max_matrix = np.zeros((rows, columns))
+  max_id_matrix = np.zeros((rows, columns))
+
+  for c in range(columns):
+    for r in range(rows):
+      if c != 0:
+        sim_matrix[r][c] = sim_matrix[r][c] + max_matrix[r][c-1]
+      if r ==0:
+        r_1 = 0
       else:
-        break
-      i_t_sents += 1
-      pass
+        r_1 = max_matrix[r-1][c]
+
+      max_matrix[r][c] = max(max_matrix[r-1][c], sim_matrix[r][c])
+      max_id_matrix[r][c] = r if max_matrix[r-1][c] < sim_matrix[r][c] else max_id_matrix[r-1][c]
+
+  path = []
+  ir_max = np.argmax(sim_matrix[:,-1])
+  for c in range(sim_matrix.shape[1]-1, -1, -1):
+    ir_max = int(max_id_matrix[ir_max][c])
+    ir_max = int(max_id_matrix[ir_max][c])
+    path.append(ir_max)
+  path.reverse()
+  return path
+
+def match_sents(data, t_sents):
+  matching_index = OptimizeSimilarity(data['segments'], t_sents)
+  for i, sent in zip(matching_index, t_sents):
+    if 't_text' not in data['segments'][i]:
+      data['segments'][i]['t_text'] = ''
+    data['segments'][i]['t_text'] += ' ' +  sent
+  for k, para in enumerate(data['segments']):
+    if 't_text' not in para:
+      para['t_text'] = ''
     temp = para['text']
     para['text'] = para['t_text']
+    print(para['text'])
     para['t_text'] = temp
-    para['clean_char'] = []
-    para['clean_cdx'] = []
-    para['clean_wdx'] = []
   return data
-
+    
 def post_processing(raw_lines, seg_lyric):
   l_nums = [len([word for word in re.split(r'\W+', line) if word]) for line in raw_lines]
   # Fill timestamps
