@@ -1,6 +1,7 @@
 import difflib
 import numpy as np
-import reimport numpy as np
+import re
+import numpy as np
 from difflib import SequenceMatcher  
 
 def split_on_uppercase(input_string):
@@ -30,7 +31,7 @@ def get_sim_matrix(f_sents, t_sents):
       sim_matrix[j][i] = get_sim_score(f_sent, t_sent)
   return sim_matrix
 
-def OptimizeSimilarity(f_sents, t_sents):
+def optimize_similarity(f_sents, t_sents):
   columns = len(t_sents)
   rows = len(f_sents)
   sim_matrix = get_sim_matrix(f_sents, t_sents)
@@ -66,7 +67,7 @@ def match_sents(data, t_sents):
     for sent in sents:
       mapping.append(i)
       f_sent_arr.append(sent)
-  matching_index = OptimizeSimilarity(f_sent_arr, t_sents)
+  matching_index = optimize_similarity(f_sent_arr, t_sents)
   print(matching_index)
   print(mapping)
   # return
