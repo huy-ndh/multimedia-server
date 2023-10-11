@@ -2,7 +2,7 @@ import requests
 import json
 import os
 
-api_url = 'https://0080-35-227-179-30.ngrok-free.app/' #Test with colab
+api_url = 'https://5ec1-35-204-136-206.ngrok-free.app/' #Test with colab
 api_whispeer_url = f'{api_url}whisper/'
 api_spleeter_url = f'{api_url}spleeter/'
 
@@ -26,11 +26,11 @@ def spleeter (id : str, audio_path: str, output_path: str):
         data['accom'] = f'{api_spleeter_url}?path={accompaniment}'
         os.makedirs(output_path, exist_ok=True)
         response = requests.get(data['vocal'])
-        vocals_path = f'data/{id}/vocals.wav'
+        vocals_path = f'{output_path}vocals.wav'
         with open(vocals_path, "wb") as f:
             f.write(response.content)
         response = requests.get(data['accom'])
-        accompaniment_path = f'data/{id}/accompaniment.wav'
+        accompaniment_path = f'{output_path}accompaniment.wav'
         with open(accompaniment_path, "wb") as f:
             f.write(response.content)
         return {
@@ -60,7 +60,7 @@ def whisper (id : str, voice_path : str, lyric: str, output_path: str):
         data = f'{api_whispeer_url}?path={data}'
         os.makedirs(output_path, exist_ok=True)
         response = requests.get(data)
-        save_path = f'data/{id}/subtitle.ass'
+        save_path = f'{output_path}subtitle.ass'
         with open(save_path, "wb") as f:
             f.write(response.content)
         return save_path

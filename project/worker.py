@@ -42,14 +42,15 @@ def create_task(id):
 	if(task["link"]):
 		links = task["link"]
 		task_path = f"data/{id}/"
+		spleeter_path = f"data/{id}/audio/"
 		video_kara_path = f"data/{id}/video_kara.mp4"
 		video_path = f"data/{id}/video.mp4"
 		audio_path = f"data/{id}/audio.mp3"
 		video_without_audio_path = f"data/{id}/video_without_audio.mp4"
-		beat_path = task_path + 'accompaniment.wav'
+		beat_path = task_path + 'audio/accompaniment.wav'
+		voice_path = task_path + 'audio/vocals.wav'
 		vocals_path = f'/content/{id}/audio/vocals.wav'
-		voice_path = task_path + 'vocals.wav'
-		subtitle_path = f"data/{id}/subtile.ass"
+		subtitle_path = f"data/{id}/subtitle.ass"
 		ydl_opts = {
 			"writesubtitles": True,
 			"skip-download": True,
@@ -84,8 +85,8 @@ def create_task(id):
 			]
 			subprocess.run(spleeter_command)
 		else:
-			# spleeter(id, audio_path, task_path)
-			print(spleeter(id, audio_path, task_path))
+			# spleeter(id, audio_path, spleeter_path)
+			print(spleeter(id, audio_path, spleeter_path))
 		update_state(3, id)
 
 		if mode:
@@ -112,8 +113,11 @@ def create_task(id):
 		check = os.path.isfile(beat_path) and os.path.isfile(subtitle_path)
 
 		while (not check):
+			check = os.path.isfile(beat_path) and os.path.isfile(subtitle_path)
 			print(check)
 			time.sleep(3)
+
+		time.sleep(30)
 
 		render_command = [
 			'ffmpeg',
