@@ -74,63 +74,69 @@ def create_task(id):
 
 		# separator = Separator('spleeter:2stems')
 		# separator.separate_to_file(audio_path, task_path)
-		if mode:
-			spleeter_command = [
-				'spleeter',
-				'separate',
-				'-p', 'spleeter:2stems',
-				'-o', task_path,
-				audio_path,
-			]
-			subprocess.run(spleeter_command)
-		else:
-			# spleeter(id, audio_path, task_path)
-			print(spleeter(id, audio_path, task_path))
+		# if mode:
+		# 	spleeter_command = [
+		# 		'spleeter',
+		# 		'separate',
+		# 		'-p', 'spleeter:2stems',
+		# 		'-o', task_path,
+		# 		audio_path,
+		# 	]
+		# 	subprocess.run(spleeter_command)
+		# else:
+		# 	# spleeter(id, audio_path, task_path)
+		# 	print(spleeter(id, audio_path, task_path))
+		time.sleep(5)
 		update_state(3, id)
 
-		if mode:
-			model = whisperx.load_model(whisper_model, device, compute_type=compute_type, language=language)
-			audio = whisperx.load_audio(voice_path)
-			data = model.transcribe(audio, batch_size=batch_size, language=language)
+		# if mode:
+		# 	model = whisperx.load_model(whisper_model, device, compute_type=compute_type, language=language)
+		# 	audio = whisperx.load_audio(voice_path)
+		# 	data = model.transcribe(audio, batch_size=batch_size, language=language)
 
-			if task['lyrics']!='':
-				t_sents = task['lyrics'].splitlines()
-				data = match_sents(data, t_sents)
-			else:
-				t_sents = [seg['text'] for seg in data["segments"]]
+		# 	if task['lyrics']!='':
+		# 		t_sents = task['lyrics'].splitlines()
+		# 		data = match_sents(data, t_sents)
+		# 	else:
+		# 		t_sents = [seg['text'] for seg in data["segments"]]
 
-			align_model, metadata = whisperx.load_align_model(language_code=language, model_name=align_model, device=device)
-			data = whisperx.align(data["segments"], align_model, metadata, audio, device, return_char_alignments=False)
+		# 	align_model, metadata = whisperx.load_align_model(language_code=language, model_name=align_model, device=device)
+		# 	data = whisperx.align(data["segments"], align_model, metadata, audio, device, return_char_alignments=False)
 
-			new_seg_lyric = post_processing(t_sents, data)
-			write_ass_file(ass_template, subtitle_path, new_seg_lyric)
-		else:
-			# whisper(id, voice_path, task['lyrics'], task_path)
-			print(whisper(id, vocals_path, task['lyrics'], task_path))
+		# 	new_seg_lyric = post_processing(t_sents, data)
+		# 	write_ass_file(ass_template, subtitle_path, new_seg_lyric)
+		# else:
+		# 	# whisper(id, voice_path, task['lyrics'], task_path)
+		# 	print(whisper(id, vocals_path, task['lyrics'], task_path))
+		time.sleep(5)
 		update_state(4, id)
 
-		check = os.path.isfile(beat_path) and os.path.isfile(subtitle_path)
+		# check = os.path.isfile(beat_path) and os.path.isfile(subtitle_path)
 
-		while (not check):
-			print(check)
-			time.sleep(3)
+		# while (not check):
+		# 	print(check)
+		# 	time.sleep(5)
 
-		render_command = [
-			'ffmpeg',
-			'-i', video_without_audio_path,
-			'-i', beat_path,
-			'-vf', f'ass={subtitle_path}',
-			video_kara_path,
-			'-map', '0'
-		]
-		subprocess.run(render_command)
+		# render_command = [
+		# 	'ffmpeg',
+		# 	'-i', video_without_audio_path,
+		# 	'-i', beat_path,
+		# 	'-vf', f'ass={subtitle_path}',
+		# 	video_kara_path,
+		# 	'-map', '0'
+		# ]
+		# subprocess.run(render_command)
+		time.sleep(5)
 		update_state(5, id)
+
+		update_link(id, 0, video_path)
+		update_link(id, 1, video_path)
 
 		return True
 	else:
 		return False
 
-def update_state (status, id):
+def update_state (status: int, id : str):
 	now = datetime.datetime.now()
 	if status == 1:
 		log = f"{now}\tStatus: 1\tDownload video successfully"
@@ -154,3 +160,10 @@ def update_state (status, id):
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	else:
 		return
+	
+def update_link(id : str, mode: int, path: str):
+	if mode == 0:
+		collection.update_one({"_id": ObjectId(id)}, { "$set": { "files.karaoke_video": path } })
+	if mode == 1:
+		collection.update_one({"_id": ObjectId(id)}, { "$set": { "files.lyrics_video": path } })
+	return
