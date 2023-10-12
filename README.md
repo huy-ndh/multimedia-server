@@ -2,7 +2,7 @@
 
 Example of how to handle background processes with FastAPI, Celery, and Docker.
 
-![system workflow](https://github.com/huy-ndh/multimedia/blob/main/graph.png)
+<img src="https://github.com/huy-ndh/multimedia/blob/main/graph.png" alt="system workflowt" width="600" >
 
 
 ## Want to use this project?
