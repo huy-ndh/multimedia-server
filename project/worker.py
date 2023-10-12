@@ -44,6 +44,7 @@ def create_task(id):
 		task_path = f"data/{id}/"
 		spleeter_path = f"data/{id}/audio/"
 		video_kara_path = f"data/{id}/video_kara.mp4"
+		video_lyric_path = f"data/{id}/video_lyric.mp4"
 		video_path = f"data/{id}/video.mp4"
 		audio_path = f"data/{id}/audio.mp3"
 		video_without_audio_path = f"data/{id}/video_without_audio.mp4"
@@ -60,6 +61,8 @@ def create_task(id):
 			"force-generic-downloader": True,
 		}
 
+		update_files(id, 1, video_kara_path)
+		update_files(id, 2, video_lyric_path)
 
 		with yt_dlp.YoutubeDL(ydl_opts) as ydl:
 			ydl.download([links])
@@ -134,7 +137,7 @@ def create_task(id):
 	else:
 		return False
 
-def update_state (status, id):
+def update_state (id: str, status: str):
 	now = datetime.datetime.now()
 	if status == 1:
 		log = f"{now}\tStatus: 1\tDownload video successfully"
@@ -156,5 +159,14 @@ def update_state (status, id):
 		log = f"{now}\tStatus: 5\tCreate video successfully"
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
+	else:
+		return
+	
+
+def update_files (id: str, mode: int, path: str):
+	if mode == 1:
+		collection.update_one({"_id": ObjectId(id)}, { "$set": { "files.karaoke_video": path } })
+	elif mode == 2:
+		collection.update_one({"_id": ObjectId(id)}, { "$set": { "files.lyrics_video": path } })
 	else:
 		return
