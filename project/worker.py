@@ -66,7 +66,7 @@ def create_task(id):
 
 		with yt_dlp.YoutubeDL(ydl_opts) as ydl:
 			ydl.download([links])
-		update_state(1, id)
+		update_state(id, 1)
 
 		ffmpeg.input(video_path) \
 			.output(audio_path, acodec='libshine') \
@@ -74,7 +74,7 @@ def create_task(id):
 		ffmpeg.input(video_path) \
 			.output(video_without_audio_path, vcodec='copy', an=None) \
 			.run()
-		update_state(2, id)
+		update_state(id, 2)
 
 		# separator = Separator('spleeter:2stems')
 		# separator.separate_to_file(audio_path, task_path)
@@ -90,7 +90,7 @@ def create_task(id):
 		else:
 			# spleeter(id, audio_path, spleeter_path)
 			print(spleeter(id, audio_path, spleeter_path))
-		update_state(3, id)
+		update_state(id, 3)
 
 		if mode:
 			model = whisperx.load_model(whisper_model, device, compute_type=compute_type, language=language)
@@ -111,7 +111,7 @@ def create_task(id):
 		else:
 			# whisper(id, voice_path, task['lyrics'], task_path)
 			print(whisper(id, vocals_path, task['lyrics'], task_path))
-		update_state(4, id)
+		update_state(id, 4)
 
 		check = os.path.isfile(beat_path) and os.path.isfile(subtitle_path)
 
@@ -131,7 +131,7 @@ def create_task(id):
 			'-map', '0'
 		]
 		subprocess.run(render_command)
-		update_state(5, id)
+		update_state(id, 5)
 
 		return True
 	else:
