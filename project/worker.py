@@ -175,7 +175,7 @@ def update_state (id: str, status: str):
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	elif status == 2:
-		log = f"{now}\tStatus: 2\Create beat audio successfully"
+		log = f"{now}\tStatus: 2\tSeparate audio grom video successfully"
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	elif status == 3:
