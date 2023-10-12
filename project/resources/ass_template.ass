@@ -7,20 +7,24 @@ WrapStyle: 0
 ScaledBorderAndShadow: yes
 PlayResX: 1280
 PlayResY: 720
-YCbCr Matrix: None
+YCbCr Matrix: TV.601
 
 [Aegisub Project Garbage]
 Last Style Storage: Default
-Video Zoom Percent: 1.000000
-Scroll Position: 3446
-Active Line: 3460
-Video Position: 2072
+Audio File: Chiếc Khăn Gió Ấm _ Khánh Phương _ Official Music Video.mp4
+Video File: Chiếc Khăn Gió Ấm _ Khánh Phương _ Official Music Video.mp4
+Video AR Mode: 4
+Video AR Value: 1.777778
+Video Zoom Percent: 0.750000
+Scroll Position: 27
+Active Line: 32
+Video Position: 924
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Default - Copier-furigana,LibbyScript,17.5,&H00FFFFFF,&H0000DEFF,&H000096FF,&H00000000,-1,0,0,0,100,100,0,0,1,1,0,9,10,10,10,1
 Style: Default-furigana,LibbyScript,25,&H00FFFFFF,&H0000DEFF,&H000096FF,&H00000000,-1,0,0,0,100,100,0,0,1,1,0,5,10,10,10,1
-Style: Default,LibbyScript,50,&H00FFFFFF,&H0000DEFF,&H000096FF,&H00000000,-1,0,0,0,100,100,0,0,1,2,0,2,10,10,10,1
+Style: Default,LibbyScript,37,&H00FFFFFF,&H0000DEFF,&H000096FF,&H00000000,-1,0,0,0,100,100,0,0,1,1.9,0,2,100,100,40,1
 Style: Default - Copier,LibbyScript,35,&H00FFFFFF,&H0000DEFF,&H000096FF,&H00000000,-1,0,0,0,100,100,0,0,1,2,0,9,10,10,10,1
 
 [Events]
