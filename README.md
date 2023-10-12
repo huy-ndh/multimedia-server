@@ -2,9 +2,8 @@
 
 Example of how to handle background processes with FastAPI, Celery, and Docker.
 
-## Want to learn how to build this?
+![system workflow](https://github.com/huy-ndh/multimedia/blob/main/graph.png)
 
-Check out the [post](https://testdriven.io/blog/fastapi-and-celery/).
 
 ## Want to use this project?
 
