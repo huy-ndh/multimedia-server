@@ -41,6 +41,7 @@ def create_task(id):
 
 	if(task["link"]):
 		links = task["link"]
+		mode_video = task["mode"]
 		task_path = f"data/{id}/"
 		spleeter_path = f"data/{id}/audio/"
 		video_kara_path = f"data/{id}/video_kara.mp4"
@@ -122,15 +123,45 @@ def create_task(id):
 
 		time.sleep(30)
 
-		render_command = [
-			'ffmpeg',
-			'-i', video_without_audio_path,
-			'-i', beat_path,
-			'-vf', f'ass={subtitle_path}',
-			video_kara_path,
-			'-map', '0'
-		]
-		subprocess.run(render_command)
+		if mode_video == 1:
+			render_command = [
+				'ffmpeg',
+				'-i', video_path,
+				'-vf', f'ass={subtitle_path}',
+				video_lyric_path,
+				'-map', '0'
+			]
+			subprocess.run(render_command)
+		elif mode_video == 2:
+			render_command = [
+				'ffmpeg',
+				'-i', video_without_audio_path,
+				'-i', beat_path,
+				'-vf', f'ass={subtitle_path}',
+				video_kara_path,
+				'-map', '0'
+			]
+			subprocess.run(render_command)
+		elif mode_video == 0:
+			render_command = [
+				'ffmpeg',
+				'-i', video_path,
+				'-vf', f'ass={subtitle_path}',
+				video_lyric_path,
+				'-map', '0'
+			]
+			subprocess.run(render_command)
+			render_command = [
+				'ffmpeg',
+				'-i', video_without_audio_path,
+				'-i', beat_path,
+				'-vf', f'ass={subtitle_path}',
+				video_kara_path,
+				'-map', '0'
+			]
+			subprocess.run(render_command)
+		else:
+			return
 		update_state(id, 5)
 
 		return True

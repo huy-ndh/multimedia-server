@@ -36,6 +36,7 @@ class Item(BaseModel):
     name: str
     link: str
     lyrics: Optional[str] = ""
+    mode: int = 0
     status: int = 0
     task_id: Optional[str] = ""
     logs: List[str] = []
