@@ -132,7 +132,7 @@ def write_sub(data_segments):
       dur = int((word['end'] - word['start'])*100)
       text += f'{{\k{dur}}}{word["word"]} '
       # text = text[:-2]
-    ass_script.append(f"Dialogue: 0,{start_time},{end_time},Default,,0,0,0,karaoke, {text}\n")
+    ass_script.append(f"Dialogue: 0,{format_seconds(start_time)},{format_seconds(end_time)},Default,,0,0,0,karaoke, {text}\n")
   return ass_script
 
 def write_ass_file(assTemplateFile, newAssPath, seg_lyric):
