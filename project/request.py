@@ -2,7 +2,7 @@ import requests
 import json
 import os
 
-api_url = 'https://dea3-35-204-43-125.ngrok-free.app/' #Test with colab
+api_url = 'https://c402-34-90-109-71.ngrok-free.app/' #Test with colab
 api_whispeer_url = f'{api_url}whisper/'
 api_spleeter_url = f'{api_url}spleeter/'
 

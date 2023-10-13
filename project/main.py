@@ -69,7 +69,7 @@ async def read_item(task_id: str):
         item = collection.find_one({"task_id": task_id})
         if item is None:
             return JSONResponse({"success": True, "message": "Item not found"})
-        return JSONResponse({"success": True, "item": json.loads(dumps(item)), "task": str(result)})
+        return JSONResponse({"success": True, "item": json.loads(dumps(item)), "task": json.loads(dumps(result))})
     except Exception as err:
         return JSONResponse({"success": False, "message": err})
     

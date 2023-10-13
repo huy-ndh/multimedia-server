@@ -12,8 +12,6 @@ from request import spleeter, whisper
 import whisperx
 import time
 
-
-
 celery = Celery(__name__)
 celery.conf.broker_url = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379")
 celery.conf.result_backend = os.environ.get("CELERY_RESULT_BACKEND", "redis://localhost:6379")
@@ -41,6 +39,7 @@ def create_task(id):
 
 	if(task["link"]):
 		links = task["link"]
+		lyrics = task["lyrics"]
 		mode_video = task["mode"]
 		task_path = f"data/{id}/"
 		spleeter_path = f"data/{id}/audio/"
@@ -53,118 +52,166 @@ def create_task(id):
 		voice_path = task_path + 'audio/vocals.wav'
 		vocals_path = f'/content/{id}/audio/vocals.wav'
 		subtitle_path = f"data/{id}/subtitle.ass"
-		ydl_opts = {
-			"writesubtitles": True,
-			"skip-download": True,
-			"format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
-			"outtmpl": video_path,
-			"force-generic-extractor": True,
-			"force-generic-downloader": True,
-		}
 
 		update_files(id, 1, video_kara_path)
 		update_files(id, 2, video_lyric_path)
+		
+		if download_video(id, video_path, links):
+			if separate_audio(id, video_path, audio_path, video_without_audio_path):
+				if separate_vocals(id, task_path, audio_path, spleeter_path):
+					if create_lyric(id, voice_path, lyrics, subtitle_path, vocals_path, task_path):
+						if create_video(id, mode_video, video_path, subtitle_path, video_lyric_path, video_kara_path, video_without_audio_path, beat_path):
+							return True
 
-		with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-			ydl.download([links])
+		update_state(id, 6)
+		return False
+	else:
+		return False
+
+def download_video (id, video_path, links):
+	ydl_opts = {
+		"writesubtitles": True,
+		"skip-download": True,
+		"format": "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best",
+		"outtmpl": video_path,
+		"force-generic-extractor": True,
+		"force-generic-downloader": True,
+	}
+
+	with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+		ydl.download([links])
+
+	check = os.path.isfile(video_path)
+	if check:
 		update_state(id, 1)
-
-		ffmpeg.input(video_path) \
-			.output(audio_path, acodec='libshine') \
-			.run()
-		ffmpeg.input(video_path) \
-			.output(video_without_audio_path, vcodec='copy', an=None) \
-			.run()
-		update_state(id, 2)
-
-		# separator = Separator('spleeter:2stems')
-		# separator.separate_to_file(audio_path, task_path)
-		if mode:
-			spleeter_command = [
-				'spleeter',
-				'separate',
-				'-p', 'spleeter:2stems',
-				'-o', task_path,
-				audio_path,
-			]
-			subprocess.run(spleeter_command)
-		else:
-			# spleeter(id, audio_path, spleeter_path)
-			print(spleeter(id, audio_path, spleeter_path))
-		update_state(id, 3)
-
-		if mode:
-			model = whisperx.load_model(whisper_model, device, compute_type=compute_type, language=language)
-			audio = whisperx.load_audio(voice_path)
-			data = model.transcribe(audio, batch_size=batch_size, language=language)
-
-			if task['lyrics']!='':
-				t_sents = task['lyrics'].splitlines()
-				data = match_sents(data, t_sents)
-			else:
-				t_sents = [seg['text'] for seg in data["segments"]]
-
-			align_model, metadata = whisperx.load_align_model(language_code=language, model_name=align_model, device=device)
-			data = whisperx.align(data["segments"], align_model, metadata, audio, device, return_char_alignments=False)
-
-			new_seg_lyric = post_processing(t_sents, data)
-			write_ass_file(ass_template, subtitle_path, new_seg_lyric)
-		else:
-			# whisper(id, voice_path, task['lyrics'], task_path)
-			print(whisper(id, vocals_path, task['lyrics'], task_path))
-		update_state(id, 4)
-
-		check = os.path.isfile(beat_path) and os.path.isfile(subtitle_path)
-
-		while (not check):
-			check = os.path.isfile(beat_path) and os.path.isfile(subtitle_path)
-			print(check)
-			time.sleep(3)
-
-		time.sleep(30)
-
-		if mode_video == 1:
-			render_command = [
-				'ffmpeg',
-				'-i', video_path,
-				'-vf', f'ass={subtitle_path}',
-				video_lyric_path,
-				'-map', '0'
-			]
-			subprocess.run(render_command)
-		elif mode_video == 2:
-			render_command = [
-				'ffmpeg',
-				'-i', video_without_audio_path,
-				'-i', beat_path,
-				'-vf', f'ass={subtitle_path}',
-				video_kara_path,
-				'-map', '0'
-			]
-			subprocess.run(render_command)
-		elif mode_video == 0:
-			render_command = [
-				'ffmpeg',
-				'-i', video_path,
-				'-vf', f'ass={subtitle_path}',
-				video_lyric_path,
-				'-map', '0'
-			]
-			subprocess.run(render_command)
-			render_command = [
-				'ffmpeg',
-				'-i', video_without_audio_path,
-				'-i', beat_path,
-				'-vf', f'ass={subtitle_path}',
-				video_kara_path,
-				'-map', '0'
-			]
-			subprocess.run(render_command)
-		else:
-			return
-		update_state(id, 5)
-
 		return True
+	else:
+		return False
+
+def separate_audio (id, video_path, audio_path, video_without_audio_path):
+	ffmpeg.input(video_path) \
+		.output(audio_path, acodec='libshine') \
+		.run(overwrite_output=True)
+	ffmpeg.input(video_path) \
+		.output(video_without_audio_path, vcodec='copy', an=None) \
+		.run(overwrite_output=True)
+	check = os.path.isfile(audio_path) and os.path.isfile(video_without_audio_path)
+	if check:
+		update_state(id, 2)
+		return True
+	else:
+		return False
+
+def separate_vocals (id, task_path, audio_path, spleeter_path): 
+	if mode:
+		spleeter_command = [
+			'spleeter',
+			'separate',
+			'-p', 'spleeter:2stems',
+			'-o', task_path,
+			audio_path,
+		]
+		subprocess.run(spleeter_command)
+	else:
+		# spleeter(id, audio_path, spleeter_path)
+		print(spleeter(id, audio_path, spleeter_path))
+	
+	check = os.path.isfile(spleeter_path+'accompaniment.wav') and  os.path.isfile(spleeter_path+'vocals.wav')
+	if check:
+		update_state(id, 3)
+		return True
+	else:
+		return False
+
+def create_lyric (id, voice_path, lyrics, subtitle_path, vocals_path, task_path):
+	if mode:
+		model = whisperx.load_model(whisper_model, device, compute_type=compute_type, language=language)
+		audio = whisperx.load_audio(voice_path)
+		data = model.transcribe(audio, batch_size=batch_size, language=language)
+
+		if lyrics !='':
+			t_sents = lyrics.splitlines()
+			data = match_sents(data, t_sents)
+		else:
+			t_sents = [seg['text'] for seg in data["segments"]]
+
+		align_model, metadata = whisperx.load_align_model(language_code=language, model_name=align_model, device=device)
+		data = whisperx.align(data["segments"], align_model, metadata, audio, device, return_char_alignments=False)
+
+		new_seg_lyric = post_processing(t_sents, data)
+		write_ass_file(ass_template, subtitle_path, new_seg_lyric)
+	else:
+		# whisper(id, voice_path, lyrics, task_path)
+		print(whisper(id, vocals_path, lyrics, task_path))
+
+	check = os.path.isfile(subtitle_path)
+	if check:
+		update_state(id, 4)
+		return True
+	else:
+		return False
+
+def create_video (id, mode_video, video_path, subtitle_path, video_lyric_path, video_kara_path, video_without_audio_path, beat_path):
+	if mode_video == 1:
+		render_command = [
+			'ffmpeg',
+			'-y',
+			'-i', video_path,
+			'-vf', f'ass={subtitle_path}',
+			video_lyric_path,
+			'-map', '0'
+		]
+		subprocess.run(render_command)
+		check = os.path.isfile(video_lyric_path)
+		if check:
+			update_state(id, 5)
+			return True
+		else:
+			return False
+	elif mode_video == 2:
+		render_command = [
+			'ffmpeg',
+			'-y',
+			'-i', video_without_audio_path,
+			'-i', beat_path,
+			'-vf', f'ass={subtitle_path}',
+			video_kara_path,
+			'-map', '0'
+		]
+		subprocess.run(render_command)
+		check = os.path.isfile(video_kara_path)
+		if check:
+			update_state(id, 5)
+			return True
+		else:
+			return False
+	elif mode_video == 0:
+		render_command = [
+			'ffmpeg',
+			'-y',
+			'-i', video_path,
+			'-vf', f'ass={subtitle_path}',
+			video_lyric_path,
+			'-map', '0'
+		]
+		subprocess.run(render_command)
+		render_command = [
+			'ffmpeg',
+			'-y',
+			'-i', video_without_audio_path,
+			'-i', beat_path,
+			'-vf', f'ass={subtitle_path}',
+			video_kara_path,
+			'-map', '0'
+		]
+		subprocess.run(render_command)
+		subprocess.run(render_command)
+		check = os.path.isfile(video_lyric_path) and os.path.isfile(video_kara_path)
+		if check:
+			update_state(id, 5)
+			return True
+		else:
+			return False
 	else:
 		return False
 
@@ -175,11 +222,11 @@ def update_state (id: str, status: str):
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	elif status == 2:
-		log = f"{now}\tStatus: 2\tSeparate audio grom video successfully"
+		log = f"{now}\tStatus: 2\tSeparate audio from video successfully"
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	elif status == 3:
-		log = f"{now}\tStatus: 3\tSeparate vocal and accompaniment from audio successfully"
+		log = f"{now}\tStatus: 3\tSeparate vocal from audio successfully"
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	elif status == 4:
@@ -188,6 +235,10 @@ def update_state (id: str, status: str):
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	elif status == 5:
 		log = f"{now}\tStatus: 5\tCreate video successfully"
+		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
+		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
+	elif status == 6:
+		log = f"{now}\tStatus: 6\tFailed"
 		collection.update_one({"_id": ObjectId(id)}, { "$set": { "status": status } })
 		collection.update_one({"_id": ObjectId(id)}, { "$push": { "logs":  log} })
 	else:
