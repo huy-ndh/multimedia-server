@@ -47,7 +47,7 @@ async def create_item(item: Item):
     try:
         item_dict = item.dict()
         result = collection.insert_one(item_dict)
-        item_id = str(result.inserted_id) 
+        item_id = str(result.inserted_id)
         task = create_task.delay(item_id)
         collection.update_one({"_id": ObjectId(item_id)}, { "$set": { "task_id": task.id } })
         now = datetime.datetime.now()
@@ -72,8 +72,8 @@ async def read_item(task_id: str):
         return JSONResponse({"success": True, "item": json.loads(dumps(item)), "task": json.loads(dumps(result))})
     except Exception as err:
         return JSONResponse({"success": False, "message": err})
-    
+
 
 @app.get("/video/")
-async def spleeter(path: str):
+async def video(path: str):
     return FileResponse(path, headers={"Content-Type": "video/mp4"})
